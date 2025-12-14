@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Landscaping Task Manager</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#1b5e20">
+</head>
+<body>
+    <div class="container">
+        <!-- Welcome Screen -->
+        <section id="welcomeSection" class="card">
+            <div class="welcome">
+                <h1><i class="fas fa-leaf"></i> Landscaping Task Manager</h1>
+                <p class="subtitle">Professional Task Tracking System for Landscaping Teams</p>
+                
+                <div class="buttons">
+                    <button class="team" onclick="showTeamLogin()">
+                        <i class="fas fa-user"></i> Team Member Login
+                    </button>
+                    <button class="admin" onclick="showAdminLogin()">
+                        <i class="fas fa-user-shield"></i> Admin Login
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <i class="fas fa-info-circle"></i>
+                   If you have any problem contact Admin
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Member Login -->
+        <section id="teamLoginSection" class="card hidden">
+            <div class="welcome">
+                <h2><i class="fas fa-user"></i> Team Member Login</h2>
+                
+                <div class="form-group">
+                    <label for="teamEmail"><i class="fas fa-envelope"></i> Team Email</label>
+                    <input type="email" id="teamEmail" placeholder="Enter your team email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="teamPassword"><i class="fas fa-lock"></i> Team Password</label>
+                    <input type="password" id="teamPassword" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="buttons">
+                    <button class="team" onclick="teamLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Login as Team Member
+                    </button>
+                    <button class="small" onclick="backToWelcome()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <i class="fas fa-users"></i>
+                    <strong>Team Members Can:</strong><br>
+                    • View all tasks<br>
+                    • Request new tasks<br>
+                    • Update task status<br>
+                    • View personal profile
+                </div>
+            </div>
+        </section>
+
+        <!-- Admin Login -->
+        <section id="adminLoginSection" class="card hidden">
+            <div class="welcome">
+                <h2><i class="fas fa-user-shield"></i> Admin Login</h2>
+                
+                <div class="form-group">
+                    <label for="adminEmail"><i class="fas fa-envelope"></i> Admin Email</label>
+                    <input type="email" id="adminEmail" placeholder="Enter your admin email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="adminPassword"><i class="fas fa-lock"></i> Admin Password</label>
+                    <input type="password" id="adminPassword" placeholder="Enter your password" required>
+                </div>
+                
+                <div class="buttons">
+                    <button class="admin" onclick="adminLogin()">
+                        <i class="fas fa-sign-in-alt"></i> Login as Admin
+                    </button>
+                    <button class="small" onclick="backToWelcome()">
+                        <i class="fas fa-arrow-left"></i> Back
+                    </button>
+                </div>
+                
+                <div class="info-box">
+                    <i class="fas fa-user-shield"></i>
+                    <strong>Admins Can:</strong><br>
+                    • View all tasks<br>
+                    • Create new tasks<br>
+                    • Approve/reject tasks<br>
+                    • Assign tasks to team members<br>
+                    • Generate reports<br>
+                    • Export to Excel<br>
+                    <strong>Special Rule:</strong> Only James can approve admin-created tasks
+                </div>
+            </div>
+        </section>
+
+        <!-- Team Member Portal -->
+        <section id="teamPortal" class="hidden">
+            <div class="header">
+                <h3><i class="fas fa-user"></i> Team Member Portal</h3>
+                <div>
+                    <span id="teamMemberName"></span>
+                    <span class="role-badge team">Team Member</span>
+                    <button class="small orange" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="all-tasks-team">
+                    <i class="fas fa-tasks"></i> All Tasks
+                </button>
+                <button class="tab-btn" data-tab="my-tasks">
+                    <i class="fas fa-clipboard-check"></i> My Tasks
+                </button>
+                <button class="tab-btn" data-tab="request-task-team">
+                    <i class="fas fa-plus-circle"></i> Request Task
+                </button>
+                <button class="tab-btn" data-tab="team-profile">
+                    <i class="fas fa-user-circle"></i> Profile
+                </button>
+            </div>
+
+            <div id="all-tasks-team" class="tab-content active">
+                <h2><i class="fas fa-clipboard-list"></i> All Tasks (Visible to Everyone)</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="searchTasksTeam" placeholder="Search tasks..." onkeyup="filterTasksTeam()">
+                    </div>
+                    <div class="form-group">
+                        <select id="filterStatusTeam" onchange="filterTasksTeam()">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="allTasksListTeam"></div>
+            </div>
+
+            <div id="my-tasks" class="tab-content">
+                <h2><i class="fas fa-clipboard-check"></i> My Assigned Tasks</h2>
+                <div id="myTasksList"></div>
+            </div>
+
+            <div id="request-task-team" class="tab-content">
+                <h2><i class="fas fa-plus-circle"></i> Request New Task</h2>
+                <div class="card">
+                    <div class="form-group">
+                        <label for="taskTitleTeam"><i class="fas fa-heading"></i> Task Title</label>
+                        <input type="text" id="taskTitleTeam" placeholder="Enter task title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskDescriptionTeam"><i class="fas fa-align-left"></i> Task Description</label>
+                        <textarea id="taskDescriptionTeam" rows="4" placeholder="Describe the task in detail"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="taskZoneTeam"><i class="fas fa-map-marker-alt"></i> Zone</label>
+                            <select id="taskZoneTeam">
+                                <option value="">Select Zone</option>
+                                <option value="Main Villa">Main Villa</option>
+                                <option value="Main SPA">Main SPA</option>
+                                <option value="Mountain Villa">Mountain Villa</option>
+                                <option value="Entourage">Entourage</option>
+                                <option value="Pool House">Pool House</option>
+                                <option value="Gate 3">Gate 3</option>
+                                <option value="Golf Landscaping">Golf Landscaping</option>
+                                <option value="Areesh">Areesh</option>
+                                <option value="MUD 1">MUD 1</option>
+                                <option value="MUD 2">MUD 2</option>
+                                <option value="MUD 3">MUD 3</option>
+                                <option value="MUD 4">MUD 4</option>
+                                <option value="MUD 5">MUD 5</option>
+                                <option value="MUD 6">MUD 6</option>
+                                <option value="Paddle Court">Paddle Court</option>
+                                <option value="Gaming Building">Gaming Building</option>
+                                <option value="Indian Palace Front">Indian Palace Front</option>
+                                <option value="Indian Palace back">Indian Palace back</option>
+                                <option value="Royal Caravan">Royal Caravan</option>
+                                <option value="Cycle Track">Cycle Track</option>
+                                <option value="POD 1 Indoor">POD 1 Indoor</option>
+                                <option value="POD 1 Out door">POD 1 Outdoor</option>
+                                <option value="Royal Road">Royal Road</option>
+                                <option value="Gate 5">Gate 5</option>
+                                <option value="VIP Hotel">VIP Hotel</option>
+                                <option value="Staff Canteen Z1">Staff Canteen Z1</option>
+                                <option value="Staff Canteen Z2">Staff Canteen Z2</option>
+                                <option value="Staff Canteen Z3">Staff Canteen Z3</option>
+                                <option value="Other">Other Area</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskPriorityTeam"><i class="fas fa-exclamation-circle"></i> Priority</label>
+                            <select id="taskPriorityTeam">
+                                <option value="Normal">Normal</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="taskImageTeam"><i class="fas fa-camera"></i> Upload Image (Optional)</label>
+                        <input type="file" id="taskImageTeam" accept="image/*">
+                    </div>
+                    
+                    <button class="submit" onclick="requestTask()">
+                        <i class="fas fa-paper-plane"></i> Submit Request
+                    </button>
+                </div>
+            </div>
+
+            <div id="team-profile" class="tab-content">
+                <h2><i class="fas fa-user-circle"></i> My Profile</h2>
+                <div class="card" id="teamProfileInfo"></div>
+            </div>
+        </section>
+
+        <!-- Admin Portal -->
+        <section id="adminPortal" class="hidden">
+            <div class="header">
+                <h3><i class="fas fa-user-shield"></i> Admin Portal</h3>
+                <div>
+                    <span id="adminName"></span>
+                    <span id="adminRoleBadge" class="role-badge"></span>
+                    <button class="small orange" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            </div>
+
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="all-tasks-admin">
+                    <i class="fas fa-tasks"></i> All Tasks
+                </button>
+                <button class="tab-btn" data-tab="create-task">
+                    <i class="fas fa-plus-circle"></i> Create Task
+                </button>
+                <button class="tab-btn" data-tab="approvals">
+                    <i class="fas fa-check-circle"></i> Approvals
+                    <span id="approvalCount" class="notification-badge hidden">0</span>
+                </button>
+                <button class="tab-btn" data-tab="reports">
+                    <i class="fas fa-chart-bar"></i> Reports
+                </button>
+                <button class="tab-btn" data-tab="admin-employees">
+                    <i class="fas fa-users"></i> Employees
+                </button>
+            </div>
+
+            <div id="all-tasks-admin" class="tab-content active">
+                <div id="jamesWarning" class="system-admin-alert hidden">
+                    <i class="fas fa-crown"></i>
+                    <strong>Special Approval Rule:</strong> Tasks created by other admins can only be approved by James (james@landscape.com)
+                </div>
+                <h2><i class="fas fa-clipboard-list"></i> All Tasks (Visible to Everyone)</h2>
+                <div class="form-row">
+                    <div class="form-group">
+                        <input type="text" id="searchTasksAdmin" placeholder="Search tasks..." onkeyup="filterTasksAdmin()">
+                    </div>
+                    <div class="form-group">
+                        <select id="filterStatusAdmin" onchange="filterTasksAdmin()">
+                            <option value="">All Status</option>
+                            <option value="Pending">Pending</option>
+                            <option value="Approved">Approved</option>
+                            <option value="In Progress">In Progress</option>
+                            <option value="Completed">Completed</option>
+                            <option value="Cancelled">Cancelled</option>
+                            <option value="Rejected">Rejected</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="allTasksListAdmin"></div>
+            </div>
+
+            <div id="create-task" class="tab-content">
+                <h2><i class="fas fa-plus-circle"></i> Create New Task</h2>
+                <div class="card">
+                    <div id="systemAdminAlert" class="system-admin-alert hidden">
+                        <i class="fas fa-crown"></i>
+                        <strong>System Admin Mode:</strong> You can edit/delete any task and manage employees
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminTaskTitle"><i class="fas fa-heading"></i> Task Title</label>
+                        <input type="text" id="adminTaskTitle" placeholder="Enter task title">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminTaskDescription"><i class="fas fa-align-left"></i> Task Description</label>
+                        <textarea id="adminTaskDescription" rows="4" placeholder="Describe the task in detail"></textarea>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="adminTaskZone"><i class="fas fa-map-marker-alt"></i> Zone</label>
+                            <select id="adminTaskZone">
+                                <option value="">Select Zone</option>
+                                <option value="Main Villa">Main Villa</option>
+                                <option value="Main SPA">Main SPA</option>
+                                <option value="Mountain Villa">Mountain Villa</option>
+                                <option value="Entourage">Entourage</option>
+                                <option value="Pool House">Pool House</option>
+                                <option value="Gate 3">Gate 3</option>
+                                <option value="Golf Landscaping">Golf Landscaping</option>
+                                <option value="Areesh">Areesh</option>
+                                <option value="MUD 1">MUD 1</option>
+                                <option value="MUD 2">MUD 2</option>
+                                <option value="MUD 3">MUD 3</option>
+                                <option value="MUD 4">MUD 4</option>
+                                <option value="MUD 5">MUD 5</option>
+                                <option value="MUD 6">MUD 6</option>
+                                <option value="Paddle Court">Paddle Court</option>
+                                <option value="Gaming Building">Gaming Building</option>
+                                <option value="Indian Palace Front">Indian Palace Front</option>
+                                <option value="Indian Palace back">Indian Palace back</option>
+                                <option value="Royal Caravan">Royal Caravan</option>
+                                <option value="Cycle Track">Cycle Track</option>
+                                <option value="POD 1 Indoor">POD 1 Indoor</option>
+                                <option value="POD 1 Out door">POD 1 Outdoor</option>
+                                <option value="Royal Road">Royal Road</option>
+                                <option value="Gate 5">Gate 5</option>
+                                <option value="VIP Hotel">VIP Hotel</option>
+                                <option value="Staff Canteen Z1">Staff Canteen Z1</option>
+                                <option value="Staff Canteen Z2">Staff Canteen Z2</option>
+                                <option value="Staff Canteen Z3">Staff Canteen Z3</option>
+                                <option value="Other">Other Area</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="adminTaskPriority"><i class="fas fa-exclamation-circle"></i> Priority</label>
+                            <select id="adminTaskPriority">
+                                <option value="Normal">Normal</option>
+                                <option value="High">High</option>
+                                <option value="Urgent">Urgent</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="assignTo"><i class="fas fa-user"></i> Assign To (Optional)</label>
+                            <select id="assignTo">
+                                <option value="">Select Team Member</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="taskDeadline"><i class="fas fa-calendar-alt"></i> Deadline</label>
+                            <input type="date" id="taskDeadline">
+                        </div>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="adminTaskImage"><i class="fas fa-camera"></i> Upload Image (Optional)</label>
+                        <input type="file" id="adminTaskImage" accept="image/*">
+                    </div>
+                    
+                    <button class="submit" onclick="createTask()">
+                        <i class="fas fa-plus"></i> Create Task
+                    </button>
+                </div>
+            </div>
+
+            <div id="approvals" class="tab-content">
+                <h2><i class="fas fa-check-circle"></i> Pending Approvals</h2>
+                <div id="approvalTasksList"></div>
+            </div>
+
+            <div id="reports" class="tab-content">
+                <h2><i class="fas fa-chart-bar"></i> Reports & Analytics</h2>
+                <div class="card">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="reportType"><i class="fas fa-chart-pie"></i> Report Type</label>
+                            <select id="reportType">
+                                <option value="summary">Task Summary</option>
+                                <option value="byZone">Tasks by Zone</option>
+                                <option value="byStatus">Tasks by Status</option>
+                                <option value="byEmployee">Tasks by Employee</option>
+                                <option value="performance">Employee Performance</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="dateRange"><i class="fas fa-calendar"></i> Date Range</label>
+                            <select id="dateRange">
+                                <option value="today">Today</option>
+                                <option value="week">This Week</option>
+                                <option value="month" selected>This Month</option>
+                                <option value="quarter">This Quarter</option>
+                                <option value="year">This Year</option>
+                                <option value="custom">Custom Range</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div id="customDateRange" class="hidden form-row">
+                        <div class="form-group">
+                            <label for="startDate">Start Date</label>
+                            <input type="date" id="startDate">
+                        </div>
+                        <div class="form-group">
+                            <label for="endDate">End Date</label>
+                            <input type="date" id="endDate">
+                        </div>
+                    </div>
+                    
+                    <button class="blue" onclick="generateReport()">
+                        <i class="fas fa-chart-line"></i> Generate Report
+                    </button>
+                    
+                    <button class="submit" onclick="exportToExcel()">
+                        <i class="fas fa-file-excel"></i> Export to Excel
+                    </button>
+                    
+                    <div id="reportResults" class="hidden">
+                        <h3>Report Results</h3>
+                        <div id="reportContent"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="admin-employees" class="tab-content">
+                <h2><i class="fas fa-users"></i> Employee Management</h2>
+                <div class="card">
+                    <div class="header" style="border-bottom: none; margin-bottom: 20px;">
+                        <h3 style="margin: 0;">Manage Employees & Admins</h3>
+                        <button class="small submit" onclick="showAddEmployeeModal()" id="addEmployeeBtn">
+                            <i class="fas fa-plus"></i> Add Employee
+                        </button>
+                    </div>
+                    <div id="employeesList"></div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <!-- Notification Container -->
+    <div id="notificationContainer"></div>
+
+    <!-- Task Detail Modal -->
+    <div id="taskModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle"></h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            <div class="modal-body" id="modalBody"></div>
+        </div>
+    </div>
+
+    <!-- Assign Task Modal -->
+    <div id="assignTaskModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Assign Task</h3>
+                <button class="modal-close" onclick="closeAssignModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="assignTaskSelect"><i class="fas fa-user"></i> Select Team Member</label>
+                    <select id="assignTaskSelect">
+                        <option value="">Select Team Member</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="assignDeadline"><i class="fas fa-calendar-alt"></i> Deadline (Optional)</label>
+                    <input type="date" id="assignDeadline">
+                </div>
+                <div class="form-group">
+                    <label for="assignNotes"><i class="fas fa-sticky-note"></i> Notes (Optional)</label>
+                    <textarea id="assignNotes" rows="3" placeholder="Add any notes for the assignee"></textarea>
+                </div>
+                <button class="submit" onclick="confirmAssignTask()">
+                    <i class="fas fa-check"></i> Assign Task
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Employee Modal -->
+    <div id="addEmployeeModal" class="modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Add New Employee</h3>
+                <button class="modal-close" onclick="closeAddEmployeeModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="newEmployeeName"><i class="fas fa-user"></i> Full Name</label>
+                    <input type="text" id="newEmployeeName" placeholder="Enter full name">
+                </div>
+                <div class="form-group">
+                    <label for="newEmployeeEmail"><i class="fas fa-envelope"></i> Email Address</label>
+                    <input type="email" id="newEmployeeEmail" placeholder="Enter email address">
+                </div>
+                <div class="form-group">
+                    <label for="newEmployeePassword"><i class="fas fa-lock"></i> Password</label>
+                    <input type="password" id="newEmployeePassword" placeholder="Enter password">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="newEmployeeRole"><i class="fas fa-user-tag"></i> Role</label>
+                        <select id="newEmployeeRole" onchange="toggleRoleFields()">
+                            <option value="team">Team Member</option>
+                            <option value="admin">Admin</option>
+                            <option value="system_admin">System Admin</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="newEmployeeStatus"><i class="fas fa-user-check"></i> Status</label>
+                        <select id="newEmployeeStatus">
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="teamMemberFields">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="newEmployeeDepartment"><i class="fas fa-building"></i> Department</label>
+                            <select id="newEmployeeDepartment">
+                                <option value="Landscaping">Landscaping</option>
+                                <option value="Maintenance">Maintenance</option>
+                                <option value="Irrigation">Irrigation</option>
+                                <option value="VIP Services">VIP Services</option>
+                                <option value="Golf Course">Golf Course</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="newEmployeeZone"><i class="fas fa-map-marker-alt"></i> Zone</label>
+                            <select id="newEmployeeZone">
+                                <option value="">Select Zone</option>
+                                <option value="Downtown">Downtown</option>
+                                <option value="Areesh/Green Team/PODs Indoor">Areesh/Green Team/PODs Indoor</option>
+                                <option value="MUD IP">MUD IP</option>
+                                <option value="PODs/VIP/RC/gate 5">PODs/VIP/RC/gate 5</option>
+                                <option value="Golf Landscaping">Golf Landscaping</option>
+                                <option value="Irrigation MUD/IP/POD/GATE 5">Irrigation MUD/IP/POD/GATE 5</option>
+                                <option value="Irrigation Areesh/Downtown">Irrigation Areesh/Downtown</option>
+                                <option value="Palm Trees">Palm Trees</option>
+                                <option value="Multiple Zones">Multiple Zones</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="adminFields" class="hidden">
+                    <div class="form-group">
+                        <label for="newEmployeeSpecialApprover">
+                            <input type="checkbox" id="newEmployeeSpecialApprover">
+                            <i class="fas fa-crown"></i> Special Approver (Can approve admin-created tasks)
+                        </label>
+                    </div>
+                </div>
+                <button class="submit" onclick="addNewEmployee()">
+                    <i class="fas fa-save"></i> Save Employee
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Initialize service worker for PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js').catch(error => {
+                console.log('Service Worker registration failed:', error);
+            });
+        }
+    </script>
+</body>
+</html>
